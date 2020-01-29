@@ -8,6 +8,13 @@ UNWIND tempVar as users
 RETURN c.name as Computer_Name,COUNT(DISTINCT(users)) as User_Count
 ORDER BY User_Count DESC
 ```
+# List Computer, User, and Group Permitting Administrator Access
+```
+MATCH (c:Computer)
+MATCH (u:User)-[r:MemberOf*1..]->(g:Group)-[:AdminTo]->(c)
+WHERE NOT g.name =~ "DOMAIN ADMINS@.+"
+RETURN DISTINCT c.name, u.name, g.name
+```
 # List Computers with Total RDP Counts Descending
 ```
 MATCH (c:Computer)
@@ -18,7 +25,7 @@ UNWIND tempVar as users
 RETURN c.name as Computer_Name,COUNT(DISTINCT(users)) as User_Count
 ORDER BY User_Count DESC
 ```
-# List Username and Non-Domain Admin Group Permitting RDP Access to Each Computer
+# List Computer, User, and Group Permitting RDP Access
 ```
 MATCH (c:Computer)
 MATCH (u:User)-[r:MemberOf*1..]->(g:Group)-[:CanRDP]->(c)
