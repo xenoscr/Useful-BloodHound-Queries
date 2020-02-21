@@ -32,3 +32,10 @@ MATCH (u:User)-[r:MemberOf*1..]->(g:Group)-[:CanRDP]->(c)
 WHERE NOT g.name =~ "DOMAIN ADMINS@.+"
 RETURN DISTINCT c.name, u.name, g.name
 ```
+# List of Objects with Interesting Rights to Domain Controllers
+```
+MATCH (c:Computer)-[r1:MemberOf]-(g1:Group) WHERE g1.name =~ "(?i)DOMAIN CONTROLLERS@.*"
+WITH c AS DCs
+MATCH (o)-[r2:Owns|:CanRDP|:AdminTo|:AddMember|:WriteDacl|:GenericAll|:GetChanges|:HasSession|:WriteOwner|:ExecuteDCOM|:AllowedToAct|:GenericWrite|:GetChangesAll|:AllExtendedRights|:AllExtendedRights|:AllowedToDelegate|:ForceChangePassword]->(DCs)
+RETURN o.name AS Name, o.objectid AS SID, type(r2) AS RelationshipType, DCs.name AS DomainController
+```
