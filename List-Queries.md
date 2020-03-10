@@ -39,3 +39,9 @@ WITH c AS DCs
 MATCH (o)-[r2:Owns|:CanRDP|:AdminTo|:AddMember|:WriteDacl|:GenericAll|:GetChanges|:HasSession|:WriteOwner|:ExecuteDCOM|:AllowedToAct|:GenericWrite|:GetChangesAll|:AllExtendedRights|:AllExtendedRights|:AllowedToDelegate|:ForceChangePassword]->(DCs)
 RETURN o.name AS Name, o.objectid AS SID, type(r2) AS RelationshipType, DCs.name AS DomainController
 ```
+# List of Users with Cross-Domain Computer Sessions
+```
+MATCH p=(c1:Computer)-[r:HasSession]->(u:User)<-[r1:HasSession]-(c2:Computer)
+WHERE NOT c1.domain = c2.domain 
+RETURN u.name, c1.name, c2.name
+```
