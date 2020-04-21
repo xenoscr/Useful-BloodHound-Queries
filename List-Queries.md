@@ -45,3 +45,17 @@ MATCH p=(c1:Computer)-[r:HasSession]->(u:User)<-[r1:HasSession]-(c2:Computer)
 WHERE NOT c1.domain = c2.domain 
 RETURN u.name, c1.name, c2.name
 ```
+# List of Groups with Total Number of Machines That they Are AdminTo
+```
+MATCH (g:Group)
+MATCH (g)-[r:AdminTo]->(c:Computer)
+RETURN g.name as Group_Name, COUNT(DISTINCT(c)) as Total_Machines
+ORDER BY Total_Machines DESC
+```
+# List of Groups with Total Number of Machines that they Can RDP to
+```
+MATCH (g:Group)
+MATCH (g)-[r:CanRDP]->(c:Computer)
+RETURN g.name as Group_Name, COUNT(DISTINCT(c)) as Total_Machines
+ORDER BY Total_Machines DESC
+```
