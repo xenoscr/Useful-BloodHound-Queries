@@ -21,7 +21,7 @@ MATCH (u:User)-[r:MemberOf*1..]->(g:Group)-[:AdminTo]->(c)
 WHERE NOT g.name =~ "DOMAIN ADMINS@.+"
 RETURN DISTINCT c.name, u.name, g.name
 ```
-# List Groups with Administrator Access with Unrolled User Counts Descending
+# List Groups with Administrator Access and Unrolled User Counts Descending
 ```
 MATCH (g:Group)-[:AdminTo]->(c)
 WHERE NOT g.name =~ "DOMAIN ADMINS@.+"
@@ -55,6 +55,18 @@ MATCH (c:Computer)
 MATCH (u:User)-[r:MemberOf*1..]->(g:Group)-[:CanRDP]->(c)
 WHERE NOT g.name =~ "DOMAIN ADMINS@.+"
 RETURN DISTINCT c.name, u.name, g.name
+```
+# List Groups with RDP Access and Unrolled User Counts Descending
+```
+MATCH (g:Group)-[:CanRDP]->(c)
+WHERE NOT g.name =~ "DOMAIN ADMINS@.+"
+WITH c, g
+OPTIONAL MATCH (u1:User)-[:MemberOf]->(g)
+OPTIONAL MATCH (u2:User)-[]->(:Group)-[:MemberOf]->(g)
+WITH COLLECT(u1) + COLLECT(u2) as tempVar, c, g
+UNWIND tempVar as users
+RETURN DISTINCT c.name, g.name, COUNT(users) AS userCount
+ORDER BY userCount DESC
 ```
 # List of Objects with Interesting Rights to Domain Controllers
 ```
