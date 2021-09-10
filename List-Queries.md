@@ -93,6 +93,14 @@ WITH c AS DCs
 MATCH (o)-[r2:Owns|:CanRDP|:AdminTo|:AddMember|:WriteDacl|:GenericAll|:GetChanges|:HasSession|:WriteOwner|:ExecuteDCOM|:AllowedToAct|:GenericWrite|:GetChangesAll|:AllExtendedRights|:AllExtendedRights|:AllowedToDelegate|:ForceChangePassword]->(DCs)
 RETURN o.name AS Name, o.objectid AS SID, type(r2) AS RelationshipType, DCs.name AS DomainController
 ```
+# List of Non-Admin Objects with Interesting Rights to Domain Controllers
+```
+MATCH (c:Computer)-[r1:MemberOf]-(g1:Group) WHERE g1.name =~ "(?i)DOMAIN CONTROLLERS@.*"
+WITH c AS DCs
+MATCH (o)-[r2:Owns|:CanRDP|:AdminTo|:AddMember|:WriteDacl|:GenericAll|:GetChanges|:HasSession|:WriteOwner|:ExecuteDCOM|:AllowedToAct|:GenericWrite|:GetChangesAll|:AllExtendedRights|:AllExtendedRights|:AllowedToDelegate|:ForceChangePassword]->(DCs)
+WHERE NOT o.name =~ "ENTERPRISE ADMINS@.+" AND NOT o.name =~ "ADMINISTRATORS@.+" AND NOT o.name =~ "DOMAIN ADMINS@.+"
+RETURN o.name AS Name, o.objectid AS SID, type(r2) AS RelationshipType, DCs.name AS DomainController
+```
 # List of Users with Cross-Domain Computer Sessions
 ```
 MATCH p=(c1:Computer)-[r:HasSession]->(u:User)<-[r1:HasSession]-(c2:Computer)
