@@ -21,7 +21,16 @@ MATCH (u:User)-[r:MemberOf*1..]->(g:Group)-[:AdminTo]->(c)
 WHERE NOT g.name =~ "DOMAIN ADMINS@.+"
 RETURN DISTINCT c.name, u.name, g.name
 ```
-# List Groups with Administrator Access and Unrolled User Counts Descending
+# List Groups with Administrator Access and Unrolled User Counts Descending (Faster)
+```
+MATCH (g:Group)-[:AdminTo]->(c)
+WHERE NOT g.name =~ "DOMAIN ADMINS@.+"
+WITH c, g
+MATCH (u1:User)-[:MemberOf*0..]->(g)
+RETURN DISTINCT c.name, g.name, COUNT(u1) AS userCount
+ORDER BY userCount DESC
+```
+# List Groups with Administrator Access and Unrolled User Counts Descending (Works on small datasets)
 ```
 MATCH (g:Group)-[:AdminTo]->(c)
 WHERE NOT g.name =~ "DOMAIN ADMINS@.+"
@@ -56,7 +65,16 @@ MATCH (u:User)-[r:MemberOf*1..]->(g:Group)-[:CanRDP]->(c)
 WHERE NOT g.name =~ "DOMAIN ADMINS@.+"
 RETURN DISTINCT c.name, u.name, g.name
 ```
-# List Groups with RDP Access and Unrolled User Counts Descending
+# List Groups with RDP Access and Unrolled User Counts Descending (Faster)
+```
+MATCH (g:Group)-[:CanRDP]->(c)
+WHERE NOT g.name =~ "DOMAIN ADMINS@.+"
+WITH c, g
+MATCH (u1:User)-[:MemberOf*0..]->(g)
+RETURN DISTINCT c.name, g.name, COUNT(u1) AS userCount
+ORDER BY userCount DESC6
+```
+# List Groups with RDP Access and Unrolled User Counts Descending (Works on small datasets)
 ```
 MATCH (g:Group)-[:CanRDP]->(c)
 WHERE NOT g.name =~ "DOMAIN ADMINS@.+"
@@ -94,4 +112,22 @@ MATCH (g:Group)
 MATCH (g)-[r:CanRDP]->(c:Computer)
 RETURN g.name as Group_Name, COUNT(DISTINCT(c)) as Total_Machines
 ORDER BY Total_Machines DESC
+```
+# List Groups with DCOM Access and Unrolled User Counts Descending
+```
+MATCH (g:Group)-[:ExecuteDCOM]->(c)
+WHERE NOT g.name =~ "DOMAIN ADMINS@.+"
+WITH c, g
+MATCH (u1:User)-[:MemberOf*0..]->(g)
+RETURN DISTINCT c.name, g.name, COUNT(u1) AS userCount
+ORDER BY userCount DESC
+```
+# List Groups with PowerShell Remoting Access and Unrolled User Counts Descending
+```
+MATCH (g:Group)-[:CanPSRemote]->(c)
+WHERE NOT g.name =~ "DOMAIN ADMINS@.+"
+WITH c, g
+MATCH (u1:User)-[:MemberOf*0..]->(g)
+RETURN DISTINCT c.name, g.name, COUNT(u1) AS userCount
+ORDER BY userCount DESC
 ```
