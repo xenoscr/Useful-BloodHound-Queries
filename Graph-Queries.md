@@ -18,3 +18,13 @@ RETURN p
 ```
 MATCH (n:User {name: "<ACCOUNT_NAME>"}), (m), p=shortestPath((m)-[r*1..]->(n)) WHERE m.name =~ "DOMAIN USERS@.+" AND NOT m=n RETURN p
 ```
+# ShortestPath from Domain Users Groups to Objects with DCSync Rights (GetChanges & GetChangesAll)
+```
+MATCH (a)-[:GetChanges]->(b)
+WITH a, b
+MATCH (a)-[:GetChangesAll]->(b)
+WITH a AS targetGroup
+MATCH p=shortestPath((m)-[r*1..]->(targetGroup)) 
+WHERE m.name =~ "DOMAIN USERS@.+" AND NOT m=targetGroup
+RETURN p
+```
