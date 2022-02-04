@@ -139,3 +139,10 @@ MATCH (u1:User)-[:MemberOf*0..]->(g)
 RETURN DISTINCT c.name, g.name, COUNT(u1) AS userCount
 ORDER BY userCount DESC
 ```
+# List Objects wtih DCSync (GetChanges & GetChangesAll) Rights
+```
+MATCH (a)-[:GetChanges]->(b)
+WITH a, b
+MATCH (a)-[:GetChangesAll]->(b)
+RETURN a.name, b.name
+```
