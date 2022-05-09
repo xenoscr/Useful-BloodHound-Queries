@@ -10,7 +10,7 @@ ORDER BY User_Count DESC
 ```
 # List Groups Permitting Administrator Access
 ```
-MATCH (g:Group)-[:AdminTo]->(c)
+MATCH (g:Group)-[:AdminTo]->(c:Computer)
 WHERE NOT g.name =~ "DOMAIN ADMINS@.+"
 RETURN DISTINCT c.name, g.name
 ```
@@ -23,7 +23,7 @@ RETURN DISTINCT c.name, u.name, g.name
 ```
 # List Groups with Administrator Access and Unrolled User Counts Descending (Faster)
 ```
-MATCH (g:Group)-[:AdminTo]->(c)
+MATCH (g:Group)-[:AdminTo]->(c:Computer)
 WHERE NOT g.name =~ "DOMAIN ADMINS@.+"
 WITH c, g
 MATCH (u1:User)-[:MemberOf*0..]->(g)
@@ -32,7 +32,7 @@ ORDER BY userCount DESC
 ```
 # List Groups with Administrator Access and Unrolled User Counts Descending (Works on small datasets)
 ```
-MATCH (g:Group)-[:AdminTo]->(c)
+MATCH (g:Group)-[:AdminTo]->(c:Computer)
 WHERE NOT g.name =~ "DOMAIN ADMINS@.+"
 WITH c, g
 OPTIONAL MATCH (u1:User)-[:MemberOf]->(g)
@@ -45,8 +45,8 @@ ORDER BY userCount DESC
 # List Computers with Total RDP Counts Descending
 ```
 MATCH (c:Computer)
-OPTIONAL MATCH (u1:User)-[:CanRDP]->(c)
-OPTIONAL MATCH (u2:User)-[]->(:Group)-[:CanRDP]->(c)
+OPTIONAL MATCH (u1:User)-[:CanRDP]->(c:Computer)
+OPTIONAL MATCH (u2:User)-[]->(:Group)-[:CanRDP]->(c:Computer)
 WITH COLLECT(u1) + COLLECT(u2) as tempVar,c
 UNWIND tempVar as users
 RETURN c.name as Computer_Name,COUNT(DISTINCT(users)) as User_Count
@@ -54,7 +54,7 @@ ORDER BY User_Count DESC
 ```
 # List Groups Permitting RDP Access
 ```
-MATCH (g:Group)-[:CanRDP]->(c)
+MATCH (g:Group)-[:CanRDP]->(c:Computer)
 WHERE NOT g.name =~ "DOMAIN ADMINS@.+"
 RETURN DISTINCT c.name, g.name
 ```
@@ -67,16 +67,16 @@ RETURN DISTINCT c.name, u.name, g.name
 ```
 # List Groups with RDP Access and Unrolled User Counts Descending (Faster)
 ```
-MATCH (g:Group)-[:CanRDP]->(c)
+MATCH (g:Group)-[:CanRDP]->(c:Computer)
 WHERE NOT g.name =~ "DOMAIN ADMINS@.+"
 WITH c, g
 MATCH (u1:User)-[:MemberOf*0..]->(g)
 RETURN DISTINCT c.name, g.name, COUNT(u1) AS userCount
-ORDER BY userCount DESC6
+ORDER BY userCount DESC
 ```
 # List Groups with RDP Access and Unrolled User Counts Descending (Works on small datasets)
 ```
-MATCH (g:Group)-[:CanRDP]->(c)
+MATCH (g:Group)-[:CanRDP]->(c:Computer)
 WHERE NOT g.name =~ "DOMAIN ADMINS@.+"
 WITH c, g
 OPTIONAL MATCH (u1:User)-[:MemberOf]->(g)
@@ -123,7 +123,7 @@ ORDER BY Total_Machines DESC
 ```
 # List Groups with DCOM Access and Unrolled User Counts Descending
 ```
-MATCH (g:Group)-[:ExecuteDCOM]->(c)
+MATCH (g:Group)-[:ExecuteDCOM]->(c:Computer)
 WHERE NOT g.name =~ "DOMAIN ADMINS@.+"
 WITH c, g
 MATCH (u1:User)-[:MemberOf*0..]->(g)
@@ -132,7 +132,7 @@ ORDER BY userCount DESC
 ```
 # List Groups with PowerShell Remoting Access and Unrolled User Counts Descending
 ```
-MATCH (g:Group)-[:CanPSRemote]->(c)
+MATCH (g:Group)-[:CanPSRemote]->(c:Computer)
 WHERE NOT g.name =~ "DOMAIN ADMINS@.+"
 WITH c, g
 MATCH (u1:User)-[:MemberOf*0..]->(g)
